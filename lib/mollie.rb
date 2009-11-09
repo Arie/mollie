@@ -57,6 +57,7 @@ module Mollie
     end
 
     def send!
+      raise MollieException.new(self) unless success?
       self
     end
 
@@ -69,9 +70,8 @@ module Mollie
     end
 
     def response
-      Net::HTTP.get_response(query.request_uri)
+      @response ||= Net::HTTP.get_response(query.request_uri)
     end
-
 
   end
 
@@ -126,6 +126,20 @@ module Mollie
 
     def query_attributes
       RequestOptions.query_attributes
+    end
+
+  end
+
+  class MollieException < ::Exception
+
+    attr_reader :response
+
+    def initialize(response)
+      @response = response
+    end
+
+    def resultcode
+      response.resultcode
     end
 
   end

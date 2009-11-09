@@ -81,21 +81,13 @@ describe Mollie do
     end
 
 
-    it "should raise an exception username is missing if result code is 20"
-    it "should raise an exception password is missing if result code is 21"
-    it "should raise an exception originator is invalid if result code is 22"
-    it "should raise an exception recepient is missing if result code is 23"
-    it "should raise an exception message is missing if result code is 24"
-    it "should raise an exception recepient is invalid if result code is 25"
-    it "should raise an exception originator is invalid if result code is 26"
-    it "should raise an exception message is invalid if result code is 27"
-    it "should raise an exception parameter is invalid if result code is 29"
-    it "should raise an exception invalid authentication if result code is 30"
-    it "should raise an exception ran out of credits if result code is 31"
-    it "should raise an exception gateway unreachable if result code is 98"
-    it "should raise an unknown exception if result code is 99"
-    it "should raise a mollie exception if response is not succesful"
-
+    it "should raise an exception when resultcode is not 10" do
+      query = mock("query")
+      query.stub!(:request_uri).and_return(URI.parse("http://blash"))
+      FakeWeb.register_uri(:get, /.*/, :body => xml_ellende(20))
+      lambda { Mollie::Send.send(query) }.should raise_error(Mollie::MollieException)
+    end
+    
   end
 
 def xml_ellende(resultcode=10)
