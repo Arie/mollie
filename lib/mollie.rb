@@ -1,6 +1,5 @@
 require 'uri'
 require 'net/http'
-require 'nokogiri'
 
 module Mollie
 
@@ -69,6 +68,11 @@ module Mollie
       $1.to_i if response.body =~ /<resultcode>(.*)<\/resultcode>/m
     end
 
+    def credits
+      $1.to_i if response.body =~ /<credits>(.*)<\/credits>/m
+    end
+
+
     def response
       @response ||= Net::HTTP.get_response(query.request_uri)
     end
@@ -99,7 +103,9 @@ module Mollie
     end
 
     def recipients
-      sms.recipients.join(',')
+      if sms.recipients
+        sms.recipients.join(',')
+      end
     end
 
     private
@@ -136,6 +142,10 @@ module Mollie
 
     def initialize(response)
       @response = response
+    end
+
+    def credits
+      response.credits
     end
 
     def resultcode
